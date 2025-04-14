@@ -6,12 +6,16 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { isNumberString } from 'class-validator';
 import * as bcrypt from 'bcrypt';
+import { TitleService } from '../title/title.service';
+import { DepartmentService } from '../department/department.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly titleService: TitleService,
+    private readonly departmentService: DepartmentService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
@@ -30,11 +34,18 @@ export class UserService {
       );
     }
 
+    const title = await this.titleService.findOne(createUserDto.titleCode);
+    const department = await this.departmentService.findOne(
+      createUserDto.departmentCode,
+    );
+
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
     const user = this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
+      title: title,
+      department: department,
     });
     const { password, ...savedUser } = await this.userRepository.save(user);
     return savedUser;

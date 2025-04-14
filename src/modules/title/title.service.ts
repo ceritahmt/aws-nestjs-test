@@ -11,14 +11,17 @@ export class TitleService {
   constructor(
     @InjectRepository(Title)
     private readonly titleRepository: Repository<Title>,
-  ) { }
+  ) {}
 
   async create(createTitleDto: CreateTitleDto): Promise<Title> {
     const existingTitle = await this.titleRepository.findOne({
-      where: [
-        { code: createTitleDto.code },
-      ],
-    })
+      where: [{ code: createTitleDto.code }],
+    });
+
+    if (existingTitle) {
+      throw new BadRequestException('Title already exists');
+    }
+
     const title = this.titleRepository.create(createTitleDto);
     return await this.titleRepository.save(title);
   }
@@ -27,7 +30,7 @@ export class TitleService {
     return await this.titleRepository.find();
   }
 
-  async findOne(idOrCode: string):Promise<Title> {
+  async findOne(idOrCode: string): Promise<Title> {
     const title = await this.titleRepository.findOne({
       where: [
         { id: isNumberString(idOrCode) ? parseInt(idOrCode) : 0 },
@@ -41,10 +44,13 @@ export class TitleService {
     return title;
   }
 
-  async update(idOrCode: string, updateTitleDto: UpdateTitleDto):Promise<Title> {
+  async update(
+    idOrCode: string,
+    updateTitleDto: UpdateTitleDto,
+  ): Promise<Title> {
     const existingTitle = await this.titleRepository.findOne({
       where: [
-        { id: isNumberString(idOrCode)? parseInt(idOrCode) : 0 },
+        { id: isNumberString(idOrCode) ? parseInt(idOrCode) : 0 },
         { code: idOrCode },
       ],
     });
@@ -53,29 +59,28 @@ export class TitleService {
     }
 
     const title = this.titleRepository.create(updateTitleDto);
-    const res= await this.titleRepository.update(existingTitle.id,title);
+    const res = await this.titleRepository.update(existingTitle.id, title);
 
-    if(res.affected==0){
+    if (res.affected == 0) {
       throw new BadRequestException('Title not updated');
     }
     const updatedTitle = await this.titleRepository.findOneOrFail({
-      where: { id: existingTitle.id }, 
+      where: { id: existingTitle.id },
     });
 
     return updatedTitle;
-
   }
 
-  async remove(idOrCode: string):Promise<undefined>  {
+  async remove(idOrCode: string): Promise<undefined> {
     const existingTitle = await this.titleRepository.findOne({
       where: [
-        { id: isNumberString(idOrCode)? parseInt(idOrCode) : 0 },
+        { id: isNumberString(idOrCode) ? parseInt(idOrCode) : 0 },
         { code: idOrCode },
-      ], 
+      ],
     });
 
-    if(!existingTitle){
-      throw new BadRequestException('Title not found'); 
+    if (!existingTitle) {
+      throw new BadRequestException('Title not found');
     }
 
     await this.titleRepository.delete(existingTitle.id);

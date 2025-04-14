@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { TitleService } from './title.service';
 import { CreateTitleDto } from './dto/create-title.dto';
 import { UpdateTitleDto } from './dto/update-title.dto';
@@ -23,7 +31,10 @@ export class TitleController {
   }
 
   @Patch(':idOrCode')
-  async update(@Param('idOrCode') idOrCode: string, @Body() updateTitleDto: UpdateTitleDto) {
+  async update(
+    @Param('idOrCode') idOrCode: string,
+    @Body() updateTitleDto: UpdateTitleDto,
+  ) {
     return await this.titleService.update(idOrCode, updateTitleDto);
   }
 
