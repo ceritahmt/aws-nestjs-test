@@ -1,67 +1,86 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Department } from 'src/modules/department/entities/department.entity';
+import { Title } from 'src/modules/title/entities/title.entity';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({unique: true})
-    code: string;
+  @Column({ unique: true })
+  code: string;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column()
-    email: string;
+  @Column()
+  email: string;
 
-    @Column()
-    username: string;
+  @Column()
+  username: string;
 
-    @Column()
-    password: string;
+  @Column()
+  password: string;
 
-    @Column({ nullable: true })
-    phone: string;
+  @Column({ nullable: true })
+  phone: string;
 
-    @Column({ default: 'en' })
-    lang: string;
+  @Column({ default: 'en' })
+  lang: string;
 
-    @Column({ name: 'title_id' })
-    titleId: number;
+  @Column({ name: 'card_id', nullable: true })
+  cardId: string;
 
-    @Column({ name: 'department_id'})
-    departmentId: number;
+  @Column({ nullable: true })
+  image: string;
 
-    @Column({ name: 'card_id', nullable: true })
-    cardId: string;
+  @Column({ default: true })
+  mainpage: boolean;
 
-    @Column({ nullable: true })
-    image: string;
+  @Column({ default: true })
+  sidebar: boolean;
 
-    @Column({ default: true })
-    mainpage: boolean;
+  @Column({ name: 'list_type', default: 1 })
+  listType: number;
 
-    @Column({ default: true })
-    sidebar: boolean;
+  @Column({ default: true })
+  status: boolean;
 
-    @Column({ name: 'list_type', default: 1 })
-    listType: number;
+  @Column({ default: false })
+  headworker: boolean;
 
-    @Column({ default: true })
-    status: boolean;
+  @Column({ nullable: true })
+  pin: string;
 
+  @CreateDateColumn({
+    name: 'create_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  create_at: Date;
+  @UpdateDateColumn({
+    name: 'update_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  update_at: Date;
+  @DeleteDateColumn({ name: 'delete_at', type: 'timestamp' })
+  delete_at: Date;
 
+  @OneToOne(() => Department)
+  @JoinColumn()
+  department: Department;
 
-    @Column({ default: false })
-    headworker: boolean;
-
-    @Column({ nullable: true })
-    pin: string;
-
-    @CreateDateColumn({ name: 'create_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    create_at: Date;
-    @UpdateDateColumn({ name: 'update_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    update_at: Date;
-    @DeleteDateColumn ({ name: 'delete_at', type: 'timestamp' })
-    delete_at: Date;
+  @OneToOne(() => Title)
+  @JoinColumn()
+  title: Title;
 }
