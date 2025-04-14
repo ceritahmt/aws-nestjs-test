@@ -68,6 +68,14 @@ export class UserService {
     const { password, ...rest } = user;
     return rest;
   }
+  async findOneByEmailWithPassword(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: [{ email: email }],
+    });
+    if (!user) throw new BadRequestException('User not found');
+
+    return user;
+  }
 
   async update(
     idOrCode: string,
@@ -106,7 +114,7 @@ export class UserService {
     });
     if (!user) throw new BadRequestException('User not found');
 
-    this.userRepository.delete(user.id);
+    await this.userRepository.delete(user.id);
 
     return;
   }
