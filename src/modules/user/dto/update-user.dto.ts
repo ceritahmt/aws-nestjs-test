@@ -5,77 +5,83 @@ import {
   IsString,
   IsEmail,
   IsBoolean,
-  IsNumber,
   MinLength,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @IsString()
+  @ApiProperty({ example: 'John', description: 'First name', required: false })
   name?: string;
 
   @IsOptional()
   @IsEmail()
+  @ApiProperty({
+    example: 'jhon.doe@email.com',
+    description: 'E-mail',
+    required: false,
+  })
   email?: string;
 
   @IsOptional()
   @IsString()
+  @ApiProperty({ example: 'jhon', description: 'Username', required: false })
   username?: string;
 
   @IsOptional()
   @IsString()
   @MinLength(6)
+  @ApiProperty({
+    example: '123456',
+    description: 'Password',
+    required: false,
+  })
   password?: string;
 
   @IsOptional()
   @IsString()
+  @ApiProperty({
+    example: '1234567890',
+    description: 'Phone number',
+    required: false,
+  })
   phone?: string;
 
   @IsOptional()
   @IsString()
+  @ApiProperty({
+    example: 'en',
+    description: 'Language',
+    required: false,
+  })
   lang?: string;
 
   @IsOptional()
-  @IsNumber()
-  titleId?: number;
-
-  @IsOptional()
-  @IsNumber()
-  departmentId?: number;
+  @IsString()
+  @ApiProperty({
+    example: 'Manager',
+    description: 'Title Code',
+    required: false,
+  })
+  titleCode: string;
 
   @IsOptional()
   @IsString()
-  cardId?: string;
+  @ApiProperty({
+    example: 'IT',
+    description: 'Department Code',
+    required: false,
+  })
+  departmentCode: string;
 
-  @IsOptional()
-  @IsString()
-  image?: string;
-
-  @IsOptional()
   @IsBoolean()
-  mainpage?: boolean;
-
   @IsOptional()
-  @IsBoolean()
-  sidebar?: boolean;
-
-  @IsOptional()
-  @IsNumber()
-  listType?: number;
-
-  @IsOptional()
-  @IsString()
-  code?: string;
-
-  @IsOptional()
-  @IsBoolean()
+  @ApiProperty({
+    example: true,
+    description: 'Active',
+    default: true,
+    required: false,
+  })
   status?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  headworker?: boolean;
-
-  @IsOptional()
-  @IsString()
-  pin?: string;
 }

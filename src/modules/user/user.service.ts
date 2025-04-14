@@ -33,6 +33,12 @@ export class UserService {
         'User with this email or username already exists',
       );
     }
+    if (createUserDto.status !== false) {
+      createUserDto.status = true;
+    }
+    if (createUserDto.lang === null) {
+      createUserDto.lang = 'en';
+    }
 
     const title = await this.titleService.findOne(createUserDto.titleCode);
     const department = await this.departmentService.findOne(
@@ -92,6 +98,18 @@ export class UserService {
     if (!user) throw new BadRequestException('User not found');
 
     const updateUser = this.userRepository.create({ ...updateUserDto });
+
+    if (updateUserDto.titleCode) {
+      const title = await this.titleService.findOne(updateUserDto.titleCode);
+      updateUser.title = title;
+    }
+    if (updateUserDto.departmentCode) {
+      const department = await this.departmentService.findOne(
+        updateUserDto.departmentCode,
+      );
+      updateUser.department = department;
+    }
+
     const result = await this.userRepository.update(user.id, updateUser);
 
     if (result.affected === 0) {
