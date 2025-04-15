@@ -1,11 +1,16 @@
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform,ValidationError } from '@nestjs/common';
+import {
+  ArgumentMetadata,
+  BadRequestException,
+  Injectable,
+  PipeTransform,
+} from '@nestjs/common';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class ValidationPipe implements PipeTransform<any> {
   async transform(value: any, { metatype }: ArgumentMetadata) {
-    if(!value){
+    if (!value) {
       throw new BadRequestException('Body not found');
     }
     if (!metatype || !this.toValidate(metatype)) {

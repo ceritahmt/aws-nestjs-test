@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/modules/user/entities/user.entity';
 import {
   Column,
@@ -11,16 +12,37 @@ import {
 
 @Entity()
 export class Department {
+  @ApiProperty({
+    example: 1,
+    description: 'Department ID',
+    required: true,
+  })
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ unique: true })
+  @ApiProperty({
+    example: 'Department Code',
+    description: 'Department code',
+    required: true,
+  })
   code: string;
 
   @Column()
+  @ApiProperty({
+    example: 'Department Name',
+    description: 'Department name',
+    required: true,
+  })
   name: string;
 
   @Column({ nullable: true })
+  @ApiProperty({
+    example: 'Department Email',
+    description: 'Department email',
+    required: true,
+    nullable: true,
+  })
   email: string;
 
   @CreateDateColumn({

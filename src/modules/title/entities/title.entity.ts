@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/modules/user/entities/user.entity';
 import {
   Column,
@@ -11,12 +12,27 @@ import {
 
 @Entity()
 export class Title {
+  @ApiProperty({
+    example: 1,
+    description: 'Title ID',
+    required: true,
+  })
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty({
+    example: 'Title Code',
+    description: 'Title code',
+    required: true,
+  })
   @Column({ unique: true })
   code: string;
 
+  @ApiProperty({
+    example: 'Title Name',
+    description: 'Title name',
+    required: true,
+  })
   @Column()
   name: string;
 

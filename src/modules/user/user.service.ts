@@ -53,12 +53,17 @@ export class UserService {
       title: title,
       department: department,
     });
-    const { password, ...savedUser } = await this.userRepository.save(user);
-    return savedUser;
+    const savedUser = await this.userRepository.save(user);
+    return await this.findOne(savedUser.id.toString());
   }
 
   async findAll(): Promise<Omit<User, 'password'>[]> {
-    const users = await this.userRepository.find();
+    const users = await this.userRepository.find({
+      relations: {
+        title: true,
+        department: true,
+      },
+    });
     return users.map(({ password, ...rest }) => ({ ...rest }));
   }
 
@@ -68,6 +73,10 @@ export class UserService {
         { id: isNumberString(idOrCode) ? parseInt(idOrCode) : -1 },
         { code: idOrCode },
       ],
+      relations: {
+        title: true,
+        department: true,
+      },
     });
     if (!user) throw new BadRequestException('User not found');
 

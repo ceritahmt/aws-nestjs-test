@@ -14,6 +14,11 @@ import {
 
 @Entity()
 export class User {
+  @ApiProperty({
+    example: 1,
+    description: 'User ID',
+    required: true,
+  })
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -108,10 +113,18 @@ export class User {
   @DeleteDateColumn({ name: 'delete_at', type: 'timestamp' })
   delete_at: Date;
 
+  @ApiProperty({
+    type: () => Department,
+    nullable: true,
+  })
   @OneToOne(() => Department)
   @JoinColumn()
   department: Department;
 
+  @ApiProperty({
+    type: () => Title,
+    nullable: true,
+  })
   @OneToOne(() => Title)
   @JoinColumn()
   title: Title;
