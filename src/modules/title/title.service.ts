@@ -71,7 +71,7 @@ export class TitleService {
     return updatedTitle;
   }
 
-  async remove(idOrCode: string): Promise<undefined> {
+  async remove(idOrCode: string): Promise<{ message: string }> {
     const existingTitle = await this.titleRepository.findOne({
       where: [
         { id: isNumberString(idOrCode) ? parseInt(idOrCode) : 0 },
@@ -85,6 +85,6 @@ export class TitleService {
 
     await this.titleRepository.delete(existingTitle.id);
 
-    return;
+    return { message: 'Title deleted successfully' };
   }
 }
