@@ -64,6 +64,7 @@ export class UserService {
         department: true,
       },
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return users.map(({ password, ...rest }) => ({ ...rest }));
   }
 
@@ -80,6 +81,7 @@ export class UserService {
     });
     if (!user) throw new BadRequestException('User not found');
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...rest } = user;
     return rest;
   }
@@ -128,11 +130,12 @@ export class UserService {
       where: { id: user.id },
     });
     if (!updatedUser) throw new BadRequestException('Updated user not found');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...rest } = updatedUser;
     return rest;
   }
 
-  async remove(idOrCode: string): Promise<undefined> {
+  async remove(idOrCode: string): Promise<{ message: string }> {
     const user = await this.userRepository.findOne({
       where: [
         { id: isNumberString(idOrCode) ? parseInt(idOrCode) : -1 },
@@ -143,6 +146,6 @@ export class UserService {
 
     await this.userRepository.delete(user.id);
 
-    return;
+    return { message: 'User deleted successfully' };
   }
 }
