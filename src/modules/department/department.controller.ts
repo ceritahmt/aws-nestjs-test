@@ -17,7 +17,7 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { Department } from './entities/department.entity';
-import { ApiResponse } from 'src/common/dto/api-response.dto';
+import { ApiResponse } from '../../common/dto/api-response.dto';
 
 @ApiBearerAuth()
 @Controller('department')
