@@ -6,53 +6,19 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { TitleService } from '../title/title.service';
 import { DepartmentService } from '../department/department.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { BadRequestException } from '@nestjs/common';
+import {
+  mockCreateUserDto,
+  mockUser,
+  mockUserRepository,
+} from './mock/user.mock.data';
 
 describe('UserService', () => {
   let service: UserService;
   let userRepository: Repository<User>;
   let titleService: TitleService;
   let departmentService: DepartmentService;
-
-  const createUserDto: CreateUserDto = {
-    email: 'test@example.com',
-    password: 'password123',
-    name: 'Test User',
-    username: 'testuser',
-    titleCode: '1',
-    departmentCode: '1',
-    code: '1',
-  };
-  const mockUser: User = {
-    ...createUserDto,
-    id: 1,
-    create_at: new Date(),
-    update_at: new Date(),
-    delete_at: new Date(),
-    status: true,
-    lang: 'en',
-    phone: '1234567890',
-    department: {
-      id: 1,
-      code: '1',
-      name: 'Test Department',
-      email: 'test@example.com',
-      create_at: new Date(),
-      update_at: new Date(),
-      delete_at: new Date(),
-      users: [],
-    },
-    title: {
-      id: 1,
-      code: '1',
-      name: 'Test Title',
-      create_at: new Date(),
-      update_at: new Date(),
-      delete_at: new Date(),
-      users: [],
-    },
-  };
 
   const USER_REPOSITORY_TOKEN = getRepositoryToken(User);
 
@@ -62,14 +28,7 @@ describe('UserService', () => {
         UserService,
         {
           provide: USER_REPOSITORY_TOKEN,
-          useValue: {
-            create: jest.fn(),
-            save: jest.fn(),
-            findOne: jest.fn(),
-            find: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn(),
-          },
+          useValue: mockUserRepository,
         },
         {
           provide: TitleService,
@@ -91,15 +50,7 @@ describe('UserService', () => {
     titleService = module.get<TitleService>(TitleService);
     departmentService = module.get<DepartmentService>(DepartmentService);
 
-    jest.spyOn(service, 'findOne').mockResolvedValue(mockUser);
-    jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
-    jest.spyOn(userRepository, 'create').mockReturnValue(mockUser);
-    jest.spyOn(userRepository, 'save').mockResolvedValue(mockUser);
-    jest.spyOn(userRepository, 'find').mockResolvedValue([mockUser]);
-    jest.spyOn(titleService, 'findOne').mockResolvedValue(mockUser.title);
-    jest
-      .spyOn(departmentService, 'findOne')
-      .mockResolvedValue(mockUser.department);
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -112,36 +63,50 @@ describe('UserService', () => {
 
   describe('createUser', () => {
     it('should create a user', async () => {
-      const user = await service.create(createUserDto);
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+      jest.spyOn(userRepository, 'create').mockReturnValue(mockUser);
+      jest.spyOn(userRepository, 'save').mockResolvedValue(mockUser);
+      jest.spyOn(service, 'findOne').mockResolvedValue(mockUser);
+      const user = await service.create(mockCreateUserDto);
       expect(user).toBeDefined();
-      expect(user.email).toBe(createUserDto.email);
-      expect(user.name).toBe(createUserDto.name);
-      expect(user.username).toBe(createUserDto.username);
+      expect(user.email).toBe(mockCreateUserDto.email);
+      expect(user.name).toBe(mockCreateUserDto.name);
+      expect(user.username).toBe(mockCreateUserDto.username);
     });
 
-    it('should call create method with correct parameters', async () => {
-      await service.create(createUserDto);
-      expect(userRepository.create).toHaveBeenCalledWith({
-        ...createUserDto,
-        password: expect.any(String) as string,
-        department: mockUser.department,
-        title: mockUser.title,
-      });
+    it('should throw an error if the user already exists', async () => {
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+      await expect(service.create(mockCreateUserDto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
-    it('should call save method', async () => {
-      await service.create(createUserDto);
-      expect(userRepository.save).toHaveBeenCalledWith(mockUser);
+    it('should throw an error if the title is not found', async () => {
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+      jest
+        .spyOn(titleService, 'findOne')
+        .mockRejectedValue(new BadRequestException('Title not found'));
+
+      await expect(service.create(mockCreateUserDto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
-    it('should call findOne method', async () => {
-      await service.create(createUserDto);
-      expect(service.findOne).toHaveBeenCalledWith(mockUser.id.toString());
+    it('should throw an error if the department is not found', async () => {
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+      jest
+        .spyOn(departmentService, 'findOne')
+        .mockRejectedValue(new BadRequestException('Department not found'));
+
+      await expect(service.create(mockCreateUserDto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
   describe('findAll', () => {
     it('should call find method', async () => {
+      jest.spyOn(userRepository, 'find').mockResolvedValue([mockUser]);
       const users = await service.findAll();
       expect(users).toBeDefined();
       expect(users.length).toBe(1);
@@ -151,18 +116,25 @@ describe('UserService', () => {
 
   describe('findOne', () => {
     it('should call findOne method', async () => {
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
       const user = await service.findOne(mockUser.id.toString());
       expect(user).toBeDefined();
       expect(user.id).toBe(mockUser.id);
     });
+
+    it('should throw an error if the user is not found', async () => {
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+      await expect(service.findOne(mockUser.id.toString())).rejects.toThrow(
+        BadRequestException,
+      );
+    });
   });
 
   describe('update', () => {
+    const updateUserDto: UpdateUserDto = {
+      name: 'test',
+    };
     it('should call update method', async () => {
-      const updateUserDto: UpdateUserDto = {
-        name: 'test',
-      };
-
       jest.spyOn(userRepository, 'findOne').mockResolvedValue({
         ...mockUser,
         ...updateUserDto,
@@ -186,6 +158,13 @@ describe('UserService', () => {
 
       expect(user).toBeDefined();
       expect(user.name).toBe('test');
+    });
+
+    it('should throw an error if the user is not found', async () => {
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+      await expect(
+        service.update(mockUser.id.toString(), updateUserDto),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 

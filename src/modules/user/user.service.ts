@@ -98,7 +98,6 @@ export class UserService {
     idOrCode: string,
     updateUserDto: UpdateUserDto,
   ): Promise<Omit<User, 'password'>> {
-    console.log(isNumberString(idOrCode), 'user');
 
     const user = await this.userRepository.findOne({
       where: [

@@ -64,7 +64,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     description: 'Title Code',
     required: false,
   })
-  titleCode: string;
+  titleCode?: string;
 
   @IsOptional()
   @IsString()
@@ -73,7 +73,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     description: 'Department Code',
     required: false,
   })
-  departmentCode: string;
+  departmentCode?: string;
 
   @IsBoolean()
   @IsOptional()
