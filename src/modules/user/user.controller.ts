@@ -16,7 +16,7 @@ import {
   ApiOkResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { ApiResponse } from 'src/common/dto/api-response.dto';
+import { ApiResponse } from '../../common/dto/api-response.dto';
 import { User } from './entities/user.entity';
 
 @ApiBearerAuth()
