@@ -126,13 +126,10 @@ export class UserService {
     if (result.affected === 0) {
       throw new BadRequestException('Failed to update user');
     }
-    const updatedUser = await this.userRepository.findOne({
-      where: { id: user.id },
-    });
+    const updatedUser = await this.findOne(user.id.toString());
     if (!updatedUser) throw new BadRequestException('Updated user not found');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...rest } = updatedUser;
-    return rest;
+    return updatedUser;
   }
 
   async remove(idOrCode: string): Promise<{ message: string }> {
