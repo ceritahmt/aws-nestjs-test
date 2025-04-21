@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { User } from '../user/entities/user.entity';
 import { JWTPayload } from './type/payload.type';
+import { comparePassword } from '../../common/hash.password';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +18,7 @@ export class AuthService {
   ): Promise<Omit<User, 'password'>> {
     const user = await this.usersService.findOneByEmailWithPassword(email);
 
-    const isMatch: boolean = bcrypt.compareSync(password, user.password);
+    const isMatch: boolean = await comparePassword(password, user.password);
     if (!isMatch) {
       throw new BadRequestException('Password does not match');
     }

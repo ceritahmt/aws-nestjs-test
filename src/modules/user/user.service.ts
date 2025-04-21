@@ -5,9 +5,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { isNumberString } from 'class-validator';
-import * as bcrypt from 'bcrypt';
 import { TitleService } from '../title/title.service';
 import { DepartmentService } from '../department/department.service';
+import { hashPassword } from '../../common/hash.password';
 
 @Injectable()
 export class UserService {
@@ -45,7 +45,7 @@ export class UserService {
       createUserDto.departmentCode,
     );
 
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const hashedPassword = await hashPassword(createUserDto.password);
 
     const user = this.userRepository.create({
       ...createUserDto,
