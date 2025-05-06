@@ -6,8 +6,7 @@
 
 ## Açıklama
 
-Bu proje, NestJS framework'ü kullanılarak geliştirilmiş bir TypeScript başlangıç projesidir. AWS Serverless mimarisi ile entegre edilmiş bir API sunucusu olarak tasarlanmıştır.
-
+Bu proje, NestJS framework'ü kullanılarak geliştirilmiş bir TypeScript başlangıç projesidir. 
 
 
 ## Teknolojiler
@@ -21,12 +20,6 @@ Bu proje, NestJS framework'ü kullanılarak geliştirilmiş bir TypeScript başl
 - TypeORM - TypeScript ve JavaScript için ORM
 - PostgreSQL - İlişkisel veritabanı yönetim sistemi
 
-### AWS Servisleri
-- AWS Lambda - Sunucusuz fonksiyon çalıştırma servisi
-- API Gateway - RESTful API yönetimi
-- DynamoDB - NoSQL veritabanı servisi
-- S3 - Dosya depolama servisi
-- CloudWatch - Loglama ve izleme servisi
 
 ### Test ve Geliştirme Araçları
 - Jest - JavaScript test framework'ü
